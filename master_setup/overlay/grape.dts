@@ -1,0 +1,28 @@
+/dts-v1/;
+/plugin/;
+/ {
+    compatible = "brcm,bcm2835";
+
+    fragment@0 {
+        target = <&gpio>;
+        __overlay__ {
+            auto_pwrsup: auto_pwrsup {
+                brcm,pins = <17 27>; /* gpio pins */
+                brcm,function = <0 0>; /* boot up direction:in=0 out=1 */
+                brcm,pull = <0 0>; /* pull direction: none=0, 1=down, 2=up */
+            };
+        };
+    };
+
+     fragment@1 {
+        target-path = "/soc";
+        __overlay__ {
+            gpiopull:gpiopull {
+              compatible = "gpio-poweroff";
+              pinctrl-names = "default";
+              pinctrl-0 = <&auto_pwrsup>;
+              status = "okay";
+           };
+        };
+     };
+};

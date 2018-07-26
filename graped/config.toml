@@ -1,0 +1,6 @@
+[network]
+# Only the last number is important
+range_begin = "192.168.2.2"
+range_end = "192.168.2.15"
+ssh_test_timeout = 0.5 # In seconds
+
