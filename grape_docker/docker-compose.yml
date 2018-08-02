@@ -1,0 +1,63 @@
+version: '3'
+services:
+  voting-app:
+    image: thecaptainsshack/rpi-voting-app:latest
+    ports:
+      - "5000:80"
+    networks:
+      - front-tier
+      - back-tier
+    deploy:
+      placement:
+        constraints: [node.role == worker]
+  voteapps_redis_1:
+    image: hypriot/rpi-redis:latest
+    networks:
+      - back-tier
+    deploy:
+      placement:
+        constraints: [node.role == worker]
+  worker:
+    image: thecaptainsshack/rpi-worker:latest
+    networks:
+      - back-tier
+    deploy:
+      placement:
+        constraints: [node.role == worker]
+  voteapps_db_1:
+    image: thecaptainsshack/postgres-arm:latest
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - back-tier
+    deploy:
+      placement:
+        constraints: [node.role == worker]
+  result-app:
+    image: thecaptainsshack/rpi-result-app:latest
+    ports:
+      - "5001:80"
+    networks:
+      - front-tier
+      - back-tier
+    deploy:
+      placement:
+        constraints: [node.role == worker]
+  visualizer:
+    image: alexellis2/visualizer-arm
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 8080:8080
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+volumes:
+  db-data: {}
+
+networks:
+  front-tier:
+    driver: overlay
+  back-tier:
+    driver: overlay

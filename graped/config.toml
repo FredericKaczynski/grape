@@ -1,6 +1,61 @@
-[network]
-# Only the last number is important
-range_begin = "192.168.2.2"
-range_end = "192.168.2.15"
-ssh_test_timeout = 0.5 # In seconds
+[cluster]
+    # The credentials used to authenticate via SSH to the Slave RPis.
+    # For example, if using an unmodified version of the Raspbian image:
+    #   ssh_username = "pi"
+    #   ssh_password = "raspberry"
+    ssh_username = "pi"
+    ssh_password = "raspberry"
+    # This defines the topology of the cluster with the different connected stacks and the Pi devices connected
+    # to them
+    # For example, a valid configuration that describes 2 stacks, with one stack at address 0 that contains
+    # 2 Pi devices on slot O and 2 and one at address 1 that contains no Pi devices, would be:
+    # [cluster.stacks.0]
+    #     [cluster.stacks.0.devices.0]
+    #         mac = "B8:27:EB:2C:C0:04"
+    #     [cluster.stacks.0.devices.2]
+    #         mac = "B8:27:EB:4E:75:BE"
+    # [cluster.stacks.1]
+    #     [cluster.stacks.1.devices]
+    [cluster.stacks.0]
+        [cluster.stacks.0.devices.0]
+            mac = "B8:27:EB:2C:C0:04"
+        [cluster.stacks.0.devices.1]
+            mac = "B8:27:EB:EF:37:6E"
+        [cluster.stacks.0.devices.2]
+            mac = "B8:27:EB:4E:75:BE"
+        [cluster.stacks.0.devices.3]
+            mac = "B8:27:EB:D8:2F:55"
+        [cluster.stacks.0.devices.4]
+            mac = "B8:27:EB:BF:B7:D6"
+        [cluster.stacks.0.devices.5]
+            mac = "B8:27:EB:07:8A:E7"
+    [cluster.stacks.1]
+        [cluster.stacks.1.devices]
 
+[rest_server]
+    # Port on which the REST server will listen
+    port = 4000
+
+[netboot]
+    # If active is set to true, the daemon will prepare and mount overlay filesystems
+    # This can be set to true even if the slaves RPi still use a SD card (though it will waste a bit of space
+    # on the master)
+    active = true
+    # The directory where the daemon will create a boot directory for each slave
+    boot_dir = "/tftpboot"
+    # The IP of the TFTP and NFS server. Normally, it should be the IP of the master RPi, but it can be changed if
+    # necessary
+    netboot_ip = "192.168.2.1"
+    # A directory with a working "fresh" boot partition, on which the slaves RPi will boot.
+    # This directory must contain the necessary files for the RPi to boot. A good way to do that is to execute:
+    #   cp /boot/ ${base_boot_dir}
+    base_boot_dir = "/tftpboot/base"
+    # The base filesystem folder
+    # Each slave RPi will have an overlay filesystem mounted:
+    #   lowerdir=${base_nfs_dir}
+    #   upperdir=${nfs_dir}/<mac>/upper
+    #   overlay=${nfs_dir}/<mac>/overlay
+    #   workdir=${nfs_dir}/<mac>/work
+    nfs_dir = "/nfs"
+    # A directory that contains a working system partition (for example Raspbian) for the slaves RPi.
+    base_nfs_dir = "/nfs/base"

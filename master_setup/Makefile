@@ -1,4 +1,4 @@
 all:
-    ./general.sh
-    ./install_overlay.sh
-    ./setup_dnsmasq.sh
+	./general.sh
+	./install_overlay.sh
+	./setup_dnsmasq.sh

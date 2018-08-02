@@ -1,10 +1,5 @@
 #!/bin/bash
 
-###############
-# The following commands configures the master RPi to be a router of the sub-network 192.168.2.1/24
-# using dnsmasq.
-###############
-
 if [ "$EUID" -ne 0 ]
   then echo "Please run as root"
   exit
@@ -87,6 +82,11 @@ server=8.8.8.8
 domain-needed
 bogus-priv
 dhcp-range=192.168.2.2,192.168.2.15,12h
+log-dhcp
+enable-tftp
+tftp-root=/tftpboot
+tftp-unique-root=mac
+pxe-service=0,"Raspberry Pi Boot"
 EOF
 
 sudo systemctl start dnsmasq

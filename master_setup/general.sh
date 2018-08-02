@@ -16,8 +16,5 @@ rpi-update
 apt-get install -y i2c-tools
 apt-get install -y python-smbus
 apt-get install -y python-pip
-
-# Install Python packages for graped
-pip install colorama
-pip install flask
-pip install toml
+# Packages for Paramiko
+apt-get install -y libffi-dev

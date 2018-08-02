@@ -29,3 +29,7 @@ dtparam=i2c_arm=on
 dt-overlay=i2c0-bcm2708
 enable_uart=1
 EOF
+
+echo "Add module in /etc/modules"
+echo "i2c-dev" >> /etc/modules
+modprobe i2c-dev
