@@ -12,7 +12,10 @@ fi
 # Install Python packages for graped
 pip install -r ../graped/requirements.txt
 
-GRAPE_PATH="/home/pi/graped"
+
+GRAPE_PATH="/home/pi/grape/graped"
+
+chmod +x ${GRAPEPATH}/graped.py
 
 if [ ! -f "$GRAPE_PATH/graped.py" ]
 then
@@ -21,8 +24,10 @@ then
     exit
 fi
 
+PATH_SERVICE="/etc/systemd/system/graped.service"
 
-cat << EOF > /etc/systemd/system/graped.service
+echo "Creating ${PATH_SERVICE}"
+cat << EOF > ${PATH_SERVICE}
 [Unit]
 Description=Grape daemon
 After=network.target
@@ -36,3 +41,7 @@ Restart=on-failure
 [Install]
 WantedBy=multi-user.target
 EOF
+
+
+echo "Enabling graped"
+systemctl start graped

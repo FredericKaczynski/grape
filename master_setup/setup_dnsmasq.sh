@@ -89,4 +89,10 @@ tftp-unique-root=mac
 pxe-service=0,"Raspberry Pi Boot"
 EOF
 
-sudo systemctl start dnsmasq
+ifdown eth0
+ifup eth0
+
+mkdir /tftpboot
+chmod 777 /tftpboot
+
+systemctl start dnsmasq

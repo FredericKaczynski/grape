@@ -33,14 +33,14 @@
         [cluster.stacks.1.devices]
 
 [rest_server]
-    # Port on which the REST server will listen
+    # Port on which the REST server will listen to
     port = 4000
 
 [netboot]
     # If active is set to true, the daemon will prepare and mount overlay filesystems
     # This can be set to true even if the slaves RPi still use a SD card (though it will waste a bit of space
     # on the master)
-    active = true
+    active = false
     # The directory where the daemon will create a boot directory for each slave
     boot_dir = "/tftpboot"
     # The IP of the TFTP and NFS server. Normally, it should be the IP of the master RPi, but it can be changed if

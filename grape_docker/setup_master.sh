@@ -7,6 +7,8 @@ fi
 
 apt install sshpass
 
+pip install -r requirements.txt
+
 # Install docker
 curl -sSL https://get.docker.com | sh
 

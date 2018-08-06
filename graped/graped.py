@@ -75,6 +75,7 @@ def execute_command(command):
 def to_dashed_mac_address(mac):
     return mac.replace(":", "-").lower()
 
+
 class Grape(object):
     def __init__(self, config, grapelib_stacks, grapelib_display):
         self.config = config
@@ -220,39 +221,22 @@ class PiDevice(object):
 
     def execute_ssh(self, command, timeout=None):
         if not self.connected:
-            return None
+            return None, None, None
 
         log_execute_ssh.info("Executing %s\"%s\"%s" % (Fore.YELLOW, command, Style.RESET_ALL))
 
-        try:
-            client = paramiko.SSHClient()
-            client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            client.connect(
-                self.ip,
-                username=config["cluster"]["ssh_username"],
-                password=config["cluster"]["ssh_password"]
-            )
-            stdin, stdout, stderr = client.exec_command(command, timeout=timeout)
+        r, stdout, stderr = execute_command([
+            "sshpass",
+            "-p", config["cluster"]["ssh_password"],
+            "ssh",
+            # The following options are not ideal, but make sure that ssh doesn't prompt anything
+            "-o", "UserKnownHostsFile=/dev/null", "-o", "StrictHostKeyChecking=no",
+            "-o", "LogLevel=QUIET",
+            "%s@%s" % (config["cluster"]["ssh_username"], self.ip),
+            command
+        ])
 
-            log_execute_ssh.info("%sstdout%s" % (Style.BRIGHT, Style.RESET_ALL))
-            stdout_lines = ""
-            for stdout_line in stdout:
-                log_execute_ssh.info("  %s" % stdout_line.rstrip())
-                stdout_lines += stdout_line
-
-            log_execute_ssh.info("%sstderr%s" % (Style.BRIGHT, Style.RESET_ALL))
-            stderr_lines = ""
-            for stderr_line in stderr:
-                log_execute_ssh.info("  %s" % stderr_line.rstrip())
-                stderr_lines += stderr_line
-
-            return_code = stdout.channel.recv_exit_status()
-            log_execute_ssh.info("Command finished with status %s%d%s" % (Fore.YELLOW, return_code, Style.RESET_ALL))
-
-            return return_code, stdout_lines, stderr_lines
-        except paramiko.ssh_exceptions.AuthenticationException as e:
-            log_execute_ssh.exception(e)
-            return None, None, None
+        return r, stdout, stderr
 
 
 def parse_ip(str_ip):
@@ -270,7 +254,7 @@ def to_ip(parts):
 
 if __name__ == "__main__":
     # Setting up the log format
-    FORMAT = "[" + Fore.WHITE + "%(asctime)s" + Style.RESET_ALL + "][%(levelname)s][%(name)s] %(message)s"
+    FORMAT = "[%(levelname)s][%(name)s] %(message)s"
     DATE_FORMAT = "%m/%d %H:%M:%S"
     logging.basicConfig(
         level=logging.DEBUG,
