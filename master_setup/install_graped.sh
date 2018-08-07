@@ -15,11 +15,11 @@ pip install -r ../graped/requirements.txt
 
 GRAPE_PATH="/home/pi/grape/graped"
 
-chmod +x ${GRAPEPATH}/graped.py
+chmod +x ${GRAPE_PATH}/graped.py
 
 if [ ! -f "$GRAPE_PATH/graped.py" ]
 then
-    echo "File $GRAPE_PATH/graped.py should exists"
+    echo "File ${GRAPE_PATH}/graped.py should exists"
     echo "Are you sure you cloned at the right position ?"
     exit
 fi

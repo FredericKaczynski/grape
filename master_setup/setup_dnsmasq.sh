@@ -94,5 +94,6 @@ ifup eth0
 
 mkdir /tftpboot
 chmod 777 /tftpboot
+mkdir /tftpboot/base
 
 systemctl start dnsmasq

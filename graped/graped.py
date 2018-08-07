@@ -13,7 +13,6 @@ import socket
 import grapelib
 import sys
 import rest_server
-import paramiko
 from utils.ColorFormatter import ColoredFormatter
 
 IP_LEASED_FILE = "/var/lib/misc/dnsmasq.leases"
