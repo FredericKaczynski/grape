@@ -366,22 +366,13 @@ if __name__ == "__main__":
                     dashed_mad = to_dashed_mac_address(mac)
 
                     tftpboot_dir = "%s/%s" % (config["netboot"]["boot_dir"], dashed_mad)
-                    netboot_overlay_dir = "%s/%s/overlay" % (config["netboot"]["nfs_dir"], dashed_mad)
-                    netboot_work_dir = "%s/%s/work" % (config["netboot"]["nfs_dir"], dashed_mad)
-                    netboot_upper_dir = "%s/%s/upper" % (config["netboot"]["nfs_dir"], dashed_mad)
+                    netboot_dir = "%s/%s" % (config["netboot"]["nfs_dir"], dashed_mad)
 
-                    dirs_to_create = [
-                        tftpboot_dir,
-                        netboot_overlay_dir,
-                        netboot_work_dir,
-                        netboot_upper_dir
-                    ]
-                    for dir_to_create in dirs_to_create:
-                        if not os.path.exists(dir_to_create):
-                            log_setup.info("  Creating %s\"%s\"%s" % (Fore.YELLOW, dir_to_create, Style.RESET_ALL))
-                            os.makedirs(dir_to_create)
-                        else:
-                            log_setup.info("  %s\"%s\"%s already exists" % (Fore.YELLOW, dir_to_create, Style.RESET_ALL))
+                    if not os.path.exists(netboot_dir):
+                        log_setup.info("  Creating %s\"%s\"%s" % (Fore.YELLOW, netboot_dir, Style.RESET_ALL))
+                        os.makedirs(netboot_dir)
+                    else:
+                        log_setup.info("  %s\"%s\"%s already exists" % (Fore.YELLOW, netboot_dir, Style.RESET_ALL))
 
                     # Setting up the boot directory
                     execute_command([
@@ -391,7 +382,7 @@ if __name__ == "__main__":
                     # Change cmdline.txt so that it netboots.
                     # It contains one line, and we change everything after `root=...` by `to_replace`
                     to_replace = "root=/dev/nfs nfsroot=%s:%s,vers=3 rw ip=dhcp rootwait elevator=deadline" % (
-                        config["netboot"]["netboot_ip"], netboot_overlay_dir
+                        config["netboot"]["netboot_ip"], netboot_dir
                     )
                     with open("%s/cmdline.txt" % tftpboot_dir, "r") as file:
                         line = file.readline().rstrip()
@@ -402,23 +393,10 @@ if __name__ == "__main__":
                     with open("%s/cmdline.txt" % tftpboot_dir, "w") as file:
                         file.write(to_write)
 
-                    # Unmount a possible previous filesystem
+                    # Setting up the filesystem
                     execute_command([
-                        "umount", netboot_overlay_dir
+                        "rsync", "-xa", "--progress", config["netboot"]["base_nfs_dir"] + "/", netboot_dir
                     ])
-                    # We mount the overlay filesystem for the child
-                    execute_command([
-                        "mount",
-                        "-t", "overlay",
-                        "-o", "lowerdir=%s,upperdir=%s,workdir=%s" % (
-                            config["netboot"]["base_nfs_dir"],
-                            netboot_upper_dir,
-                            netboot_work_dir
-                        ),
-                        "none",
-                        netboot_overlay_dir
-                    ])
-
     else:
         log_setup.info("Netboot has been deactivated in the config file")
 

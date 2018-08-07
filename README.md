@@ -101,7 +101,7 @@ sudo dd if=/dev/mmcblk0 of=slave-rpi.img bs=16M status=progress
 wget https://raw.githubusercontent.com/Drewsif/PiShrink/master/pishrink.sh
 chmod +x ./pishrink.sh
 sudo ./pishrink.sh slave-rpi.img
-zip slave-rpi.img.zip save-rpi.img
+zip slave-rpi.img.zip slave-rpi.img
 
 ```
 
