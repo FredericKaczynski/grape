@@ -19,6 +19,9 @@ Each script sets up the RPi for a different task:
 Assuming you are connected via SSH to a RPi with a freshly installed Raspbian OS that contains a clone of this repository, you can simply do:
 
 ```sh
-cd master_setup
+wget https://github.com/FredericKaczynski/grape/archive/master.zip
+unzip master.zip
+mv grape-master grape
+cd grape/master_setup
 sudo make
 ```

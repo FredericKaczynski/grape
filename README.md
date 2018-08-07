@@ -145,7 +145,7 @@ sudo sed -i 's|ID=raspbian|ID=debian|' /nfs/base/etc/os-release
 # The file `/nfs/base/etc/fstab` must be edited to remove the
 # 2 lines that contains `/dev/mmcblkp1` and `/dev/mmcblkp2`.
 # At the end, only a line with `proc` should be left
-sudo nano /nfs/base/etc/fstab
+sed -i.old -n -e "/proc/{p;}" fstab
 ```
 
 **Note** `graped` will copy this base filesystem for each slaves RPi. Depending on the available space on the SD card you used and the size of the system you want to use, it may simply run out of available space.
