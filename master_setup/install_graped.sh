@@ -44,4 +44,5 @@ EOF
 
 
 echo "Enabling graped"
+systemctl enable graped
 systemctl start graped

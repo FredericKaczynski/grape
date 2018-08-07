@@ -24,16 +24,11 @@ There are 3 groups of shunt that must be placed on each stack:
 * On the back of the board (that is, the side with the slaves RPi micro USB connectors), you have 2 shunters to place: `SDA` and `SDL`. They determine which of the 2 I2C Bus the stack will use (either 0 or 1). In practice, this doesn't have any impact on `graped`, so you can choose any of the 2 buses. The 2 shunters must be connected with the same bus.
 * On the front of the board (that is, the side with the master RPi), you have 2 groups of shunters:
   * 3 shunters `A0`, `A1` and `A2` must be placed to form the address of the stack. Each stack of the cluster must have a different address. Additionaly, if the Power Meter is activated (via the shunters explained below) `A1` **must** be set to 0.
-  * 2 shunters `PWR METER` must be placed to enable or disable the Power Meter.
+  * 2 shunters `PWR METER` must be placed to enable or disable the Power Meter. The 2 shunters should be placed in the same way.
 
 ### Setup a master RPi
 
-The SD card on the master must be flashed with a special system image ([master-rpi.img](http://google.com)) with the necessary packages installed and configured. To do so, you can do:
-
-```bash
-wget http://google.com/master-rpi.img
-dd if=master-rpi.img of=/dev/mmcblk0 bs=16M status=progress
-```
+The SD card on the master must be flashed with a special system image ([master-rpi.img.zip](http://google.com)) with the necessary packages installed and configured. To do so, you can do:
 
 Once done, you can unmount the SD card and plug it to the master RPi of your Grape cluster.
 
@@ -64,9 +59,9 @@ This configuration describes a cluster that is composed of 2 stacks:
   * A Pi device on slot `0` with the MAC address `B8:27:EB:2C:C0:04`
   * A Pi device on slot `1` with the MAC address `B8:27:EB:EF:37:6E`
   * A Pi device on slot `5` with the MAC address `B8:27:EB:07:8A:E7`
-* One stack configured with the address `1` (`001`), with no devices
+* One stack configured with the address `1` (`001`), with no Pi devices.
 
-The default value for the rest of the configuration file should suffice for a first start with the Grape cluster. Documentation on the other configuration values is available in `graped/README.md`.
+The default value for the rest of the configuration file should suffice for a first start with the Grape cluster (by default, netbooting is disabled). Documentation on the other configuration values is available in `graped/README.md`.
 
 ### Configure the slaves RPi
 
@@ -76,8 +71,7 @@ Depending on whether you enabled netbooting, setting up the slaves RPi will be d
 
 Each slaves will require an SD card with a working operating system. Any system can be used and no `graped`-specific modifications must be made on the slaves RPi, although some modifications might have to be made depending on the distribution.
 
-A image with a working Raspbian Stretch is available here: [slave-rpi.img](http://google.com). Download this image and flash the SD cards using a program like [Etcher](https://etcher.io/) or the unix command `dd`.
-
+A image with a working Raspbian Stretch is available here: [slave-rpi.img.zip](http://google.com). Download this image, unzip it and flash the SD cards using a program like [Etcher](https://etcher.io/) or the unix command `dd`.
 
 **Note** If the link above is down or if you want to recreate the `.img` file, here are the instructions:  
 The following commands will download a Raspbian Stretch installation and build `slave-rpi.img`:
@@ -106,13 +100,34 @@ sudo dd if=/dev/mmcblk0 of=slave-rpi.img bs=16M status=progress
 # Shrink the file to the minimum
 wget https://raw.githubusercontent.com/Drewsif/PiShrink/master/pishrink.sh
 chmod +x ./pishrink.sh
-sudo ./pishrink.sh slave-rpi.img 
+sudo ./pishrink.sh slave-rpi.img
+zip slave-rpi.img.zip save-rpi.img
 
 ```
 
 #### With netbooting
 
+Netbooting is only usable when using RPi 3 B or above.
+
 You can remove the SD cards off the slaves RPi, since they will boot on a filesystem situated on the master.
+
+Two things must be done in order to use netbooting:
+
+##### One Time Programmable bit
+
+If you're using a RPi 3B, you must activate an One Time Programmable (OTP) bit (With RPi 3B+, it is not necessary) to make the RPi try to netboot if an SD card is not plugged.
+
+To activate this bit, the RPi has to boot once with a SD card containing a Raspbian system with the line `program_usb_boot_mode=1` in `/boot/config.txt`. Once a RPi has its OTP set, you can remove the line added before (You can mark the RPi with a colored spot to distinguish them)
+
+To check if an RPi has its OTP set, you can use the following command:
+```bash
+$ vcgencmd otp_dump | grep 17:
+17:3020000a
+```
+
+If the RPi has not its OTP set, the output should be different: `17:1020000a`.
+
+##### Netbootable system on the master
 
 You must prepare a single working filesystem for the slaves RPi to boot on the master. The following commands, which must be executed on the master, describe how to setup a fresh Raspbian Stretch system:
 

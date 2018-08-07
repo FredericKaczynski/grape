@@ -18,10 +18,22 @@ Each script sets up the RPi for a different task:
 
 Assuming you are connected via SSH to a RPi with a freshly installed Raspbian OS that contains a clone of this repository, you can simply do:
 
-```sh
+```bash
 wget https://github.com/FredericKaczynski/grape/archive/master.zip
 unzip master.zip
 mv grape-master grape
 cd grape/master_setup
 sudo make
 ```
+
+Once finished, reboot the RPi once for all the changes to take effect.
+
+You may also want to make `.img` file of the SD card to have a backup, or to quickly re-flash an other SD card. To do this, plug the SD card on your computer, and execute:
+
+```bash
+sudo dd if=/dev/mmcblk0 of=master-rpi.img bs=16M status=progress
+wget https://raw.githubusercontent.com/Drewsif/PiShrink/master/pishrink.sh
+chmod +x ./pishrink.sh
+sudo ./pishrink.sh master-rpi.img
+zip master-rpi.img.zip master-rpi.img
+``` 
