@@ -31,6 +31,9 @@ Once finished, reboot the RPi once for all the changes to take effect.
 You may also want to make `.img` file of the SD card to have a backup, or to quickly re-flash an other SD card. To do this, plug the SD card on your computer, and execute:
 
 ```bash
-sudo dd if=/dev/mmcblk0 of=master-rpi.img bs=16M status=progress
-# TODO: Shrink the size of the image to the minimum
+sudo dd if=/dev/mmcblk0 of=master-rpi.img bs=64M status=progress
+wget https://raw.githubusercontent.com/Drewsif/PiShrink/master/pishrink.sh
+chmod +x pishrink.sh
+sudo ./pishrink.sh -s master-rpi.img
+zip master-rpi.img.zip master-rpi.img
 ``` 

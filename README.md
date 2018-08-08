@@ -81,7 +81,7 @@ wget https://downloads.raspberrypi.org/raspbian_lite_latest
 unzip raspbian_lite_latest
 # The name of the file extracted may change (specially the date)
 # Depending on your SD card reader, you may need to change `/dev/mmcblk0` to the correct location
-sudo dd if=2018-06-27-raspbian-stretch-lite.img of=/dev/mmcblk0 bs=16M status=progress
+sudo dd if=2018-06-27-raspbian-stretch-lite.img of=/dev/mmcblk0 bs=64M status=progress
 
 # Mount the SD card
 sudo mkdir /mnt /mnt/boot /mnt/rootfs

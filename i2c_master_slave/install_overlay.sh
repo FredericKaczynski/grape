@@ -17,7 +17,14 @@ echo "Change /boot/config.txt to add overlay"
 cat << "EOF" >> /boot/config.txt
 
 # Added by install_overlay.sh
-dt-overlay=i2cslave-bcm2708
+dtoverlay=i2cslave-bcm2708
 dtparam=i2c=on
 dtparam=i2c0=on
+dtparam=i2c_arm=on
+dtoverlay=i2c0-bcm2708
+enable_uart=1
 EOF
+
+echo "Add module in /etc/modules"
+echo "i2c-dev" >> /etc/modules
+modprobe i2c-dev
