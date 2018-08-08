@@ -71,10 +71,7 @@ Depending on whether you enabled netbooting, setting up the slaves RPi will be d
 
 Each slaves will require an SD card with a working operating system. Any system can be used and no `graped`-specific modifications must be made on the slaves RPi, although some modifications might have to be made depending on the distribution.
 
-A image with a working Raspbian Stretch is available here: [slave-rpi.img.zip](https://nofile.io/f/ONfV6xXxqVQ/slave-rpi.img.zip). Download this image, unzip it and flash the SD cards using a program like [Etcher](https://etcher.io/) or the unix command `dd`.
-
-**Note** If the link above is down or if you want to recreate the `.img` file, here are the instructions:  
-The following commands will download a Raspbian Stretch installation and build `slave-rpi.img`:
+The following commands will download a Raspbian Stretch installation, install it on a plugged SD card and make some modifications necessary on Raspbian Stretch:
 
 ```bash
 wget https://downloads.raspberrypi.org/raspbian_lite_latest
@@ -88,19 +85,12 @@ sudo mkdir /mnt /mnt/boot /mnt/rootfs
 sudo mount /dev/mmcblk0p1 /mnt/boot
 sudo mount /dev/mmcblk0p2 /mnt/rootfs
 
-# Create the empty ssh file to tell Raspbian to open port 22 of the RPi.
+# Create the empty ssh file to tell Raspbian to open port 22 of the RPi
 sudo touch /mnt/boot/ssh
 # Change the described OS to not confuse docker-machine
 sudo sed -i 's|ID=raspbian|ID=debian|' /mnt/rootfs/etc/os-release
 sudo umount /mnt/boot
 sudo umount /mnt/rootfs
-
-# Copy the content of the SD card, will create a file of the size of the SD card
-sudo dd if=/dev/mmcblk0 of=slave-rpi.img bs=16M status=progress
-wget https://raw.githubusercontent.com/Drewsif/PiShrink/master/pishrink.sh
-chmod +x pishrink.sh
-sudo ./pishrink.sh -s slave-rpi.img
-zip slave-rpi.img.zip slave-rpi.img
 ```
 
 #### With netbooting
