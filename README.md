@@ -28,7 +28,7 @@ There are 3 groups of shunt that must be placed on each stack:
 
 ### Setup a master RPi
 
-The SD card on the master must be flashed with a special system image ([master-rpi.img.zip](https://nofile.io/f/1Zz281zp6dD/master-rpi.img.zip)) with the necessary packages installed and configured. To do so, you can do:
+The SD card on the master must be flashed with a special system image ([master-rpi.img.zip](https://nofile.io/f/58RPrgbMROZ/master-rpi.img.zip)) with the necessary packages installed and configured. To do so, you can do:
 
 Once done, you can unmount the SD card and plug it to the master RPi of your Grape cluster.
 
@@ -71,7 +71,7 @@ Depending on whether you enabled netbooting, setting up the slaves RPi will be d
 
 Each slaves will require an SD card with a working operating system. Any system can be used and no `graped`-specific modifications must be made on the slaves RPi, although some modifications might have to be made depending on the distribution.
 
-A image with a working Raspbian Stretch is available here: [slave-rpi.img.zip](https://nofile.io/f/oXQ0aCFrTux/slave-rpi.img.zip). Download this image, unzip it and flash the SD cards using a program like [Etcher](https://etcher.io/) or the unix command `dd`.
+A image with a working Raspbian Stretch is available here: [slave-rpi.img.zip](https://nofile.io/f/ONfV6xXxqVQ/slave-rpi.img.zip). Download this image, unzip it and flash the SD cards using a program like [Etcher](https://etcher.io/) or the unix command `dd`.
 
 **Note** If the link above is down or if you want to recreate the `.img` file, here are the instructions:  
 The following commands will download a Raspbian Stretch installation and build `slave-rpi.img`:
@@ -97,7 +97,10 @@ sudo umount /mnt/rootfs
 
 # Copy the content of the SD card, will create a file of the size of the SD card
 sudo dd if=/dev/mmcblk0 of=slave-rpi.img bs=16M status=progress
-# TODO: Shrink the size of the image to the minimum
+wget https://raw.githubusercontent.com/Drewsif/PiShrink/master/pishrink.sh
+chmod +x pishrink.sh
+sudo ./pishrink.sh -s slave-rpi.img
+zip slave-rpi.img.zip slave-rpi.img
 ```
 
 #### With netbooting
