@@ -288,6 +288,9 @@ if __name__ == "__main__":
             log_setup.error("Configuration set for a stack at %s%d%s but no such stack found on the bus" % (
                 Fore.YELLOW, stack_add, Style.RESET_ALL
             ))
+            if grapelib_display is not None:
+                grapelib_display.clear_screen()
+                grapelib_display.print_str("Bad configuration")
             sys.exit(1)
 
         stack = Stack(stack_add, grapelib_stacks[stack_add])

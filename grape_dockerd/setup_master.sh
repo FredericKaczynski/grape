@@ -5,32 +5,30 @@ if [ "$EUID" -ne 0 ]
   exit
 fi
 
-#apt install sshpass
+apt install sshpass
 
-#pip install -r requirements.txt
+pip install -r requirements.txt
 
 # Install docker
-#curl -sSL https://get.docker.com | sh
+curl -sSL https://get.docker.com | sh
 
 # Install docker-machine
-#curl -L https://github.com/docker/machine/releases/download/v0.14.0/docker-machine-Linux-armhf >/tmp/docker-machine
-#sudo install /tmp/docker-machine /usr/local/bin/docker-machine
+curl -L https://github.com/docker/machine/releases/download/v0.14.0/docker-machine-Linux-armhf >/tmp/docker-machine
+sudo install /tmp/docker-machine /usr/local/bin/docker-machine
 
 # Add user pi as being able to use docker
 sudo gpasswd -a pi docker
 
-# Generating a key that will be used for all transactions
 mkdir keys/
-ssh-keygen -f keys/id_rsa -N ""
 
 # Setup grape_dockerd as a service
 GRAPE_DOCKERD_PATH="/home/pi/grape/grape_dockerd"
 
 chmod +x ${GRAPE_DOCKERD_PATH}/grape_dockerd.py
 
-if [ ! -f "$GRAPE_PATH/grape_dockerd.py" ]
+if [ ! -f "${GRAPE_DOCKERD_PATH}/grape_dockerd.py" ]
 then
-    echo "File ${GRAPE_PATH}/grape_dockerd.py should exists"
+    echo "File ${GRAPE_DOCKERD_PATH}/grape_dockerd.py should exists"
     echo "Are you sure you cloned at the right position ?"
     exit
 fi
@@ -40,7 +38,7 @@ PATH_SERVICE="/etc/systemd/system/grape_dockerd.service"
 echo "Creating ${PATH_SERVICE}"
 cat << EOF > ${PATH_SERVICE}
 [Unit]
-Description=Grape daemon
+Description=Grape Docker daemon
 After=network.target
 
 [Service]

@@ -7,7 +7,7 @@ Each folder of this repository contains a component of the project:
 * `master_setup` contains the necessary `.sh` scripts to create a working Master RPi from a fresh Raspbian installation.
 * `graped` contains the source code of the Python daemon that runs on the Master RPi.
 * `grapecli` contains the source code of the small Python utility that can query the Python daemon on the Master RPi for informations about the state of the cluster.
-* `grape_docker` contains the source code of an other daemon that runs on the Master RPi and that takes care of installing docker on slaves RPi and making them join a docker swarm manager by the masterpylo. This daemon relies on `graped`
+* `grape_dockerd` contains the source code of an other daemon that runs on the Master RPi and that takes care of installing docker on slaves RPi and making them join a docker swarm manager by the masterpylo. This daemon relies on `graped`
 
 The following component is not used in the final project, and is there to present the work that has been done to make it work
 
@@ -28,7 +28,7 @@ There are 3 groups of shunt that must be placed on each stack:
 
 ### Setup a master RPi
 
-The SD card on the master must be flashed with a special system image ([master-rpi.img.zip](http://google.com)) with the necessary packages installed and configured. To do so, you can do:
+The SD card on the master must be flashed with a special system image ([master-rpi.img.zip](https://nofile.io/f/1Zz281zp6dD/master-rpi.img.zip)) with the necessary packages installed and configured. To do so, you can do:
 
 Once done, you can unmount the SD card and plug it to the master RPi of your Grape cluster.
 
@@ -71,7 +71,7 @@ Depending on whether you enabled netbooting, setting up the slaves RPi will be d
 
 Each slaves will require an SD card with a working operating system. Any system can be used and no `graped`-specific modifications must be made on the slaves RPi, although some modifications might have to be made depending on the distribution.
 
-A image with a working Raspbian Stretch is available here: [slave-rpi.img.zip](http://google.com). Download this image, unzip it and flash the SD cards using a program like [Etcher](https://etcher.io/) or the unix command `dd`.
+A image with a working Raspbian Stretch is available here: [slave-rpi.img.zip](https://nofile.io/f/oXQ0aCFrTux/slave-rpi.img.zip). Download this image, unzip it and flash the SD cards using a program like [Etcher](https://etcher.io/) or the unix command `dd`.
 
 **Note** If the link above is down or if you want to recreate the `.img` file, here are the instructions:  
 The following commands will download a Raspbian Stretch installation and build `slave-rpi.img`:
@@ -97,12 +97,7 @@ sudo umount /mnt/rootfs
 
 # Copy the content of the SD card, will create a file of the size of the SD card
 sudo dd if=/dev/mmcblk0 of=slave-rpi.img bs=16M status=progress
-# Shrink the file to the minimum
-wget https://raw.githubusercontent.com/Drewsif/PiShrink/master/pishrink.sh
-chmod +x ./pishrink.sh
-sudo ./pishrink.sh slave-rpi.img
-zip slave-rpi.img.zip slave-rpi.img
-
+# TODO: Shrink the size of the image to the minimum
 ```
 
 #### With netbooting
@@ -165,6 +160,15 @@ sed -i.old -n -e "/proc/{p;}" fstab
 
 **Note** `graped` will copy this base filesystem for each slaves RPi. Depending on the available space on the SD card you used and the size of the system you want to use, it may simply run out of available space.
 If it happens, either give the master RPi a bigger SD card, or use a smaller system for the slaves RPi (such as [DietPi](https://dietpi.com/)).
+
+### Launch everything
+
+Once you have flashed the SD card of the master and flashed the SD cards of the slaves (or prepared the filesystem for the slaves on the master), you can plug them on the RPis and power the clusters.
+
+If everything want correctly, `graped` should launch once the master RPi is booted. Normally, you should hear the sound of the Power Switch a few seconds after you have powered on the stack. If it doesn't happen, check the display attached to the cluster for an error message.
+If `Bad configuration` is written, it means that the daemon couldn't find the stacks that you've written in `config.toml`. Check if they are powered on and if you didn't miswritten the addresses of the stacks.
+
+You can use `curl` or use a browser to go to `http://<ip_of_master>:4000/` to get the status of the cluster.
 
 ## Possible issues
 

@@ -198,6 +198,13 @@ if __name__ == "__main__":
                                 ))
                                 setup_host(ip, hostname)
 
+                                # Leave their swarm
+
+                                execute_command([
+                                    "docker-machine", "ssh", hostname,
+                                    "sudo docker swarm leave"
+                                ])
+
                                 # Join the swarm
                                 execute_command([
                                     "docker-machine", "ssh", hostname,
