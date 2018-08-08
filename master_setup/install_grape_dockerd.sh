@@ -7,7 +7,7 @@ fi
 
 apt install sshpass
 
-pip install -r requirements.txt
+pip install -r ../grape_dockerd/requirements.txt
 
 # Install docker
 curl -sSL https://get.docker.com | sh
@@ -19,7 +19,7 @@ sudo install /tmp/docker-machine /usr/local/bin/docker-machine
 # Add user pi as being able to use docker
 sudo gpasswd -a pi docker
 
-mkdir keys/
+mkdir ../grape_dockerd/keys/
 
 # Setup grape_dockerd as a service
 GRAPE_DOCKERD_PATH="/home/pi/grape/grape_dockerd"
