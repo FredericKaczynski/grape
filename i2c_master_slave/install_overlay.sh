@@ -1,30 +1,36 @@
 #!/usr/bin/env bash
 
-###############
-# Compiles and installes the overlay on the Slave RPi
-###############
+if [ -z $1 ]; then
+	ADDRESS=$1
+else
+	ADDRESS=80 # 0x50
+fi
 
-echo "Compile overlay"
+git clone --depth=1 https://github.com/raspberrypi/linux
+cd linux
 
-dtc -@ -I dts -O dtb -o overlay/i2cslave-bcm2708.dtbo overlay/i2cslave-bcm2708.dts
+KERNEL=kernel7
+make bcm2709_defconfig
 
-echo "Move overlay to /boot/overlays"
+make -j4 zImage modules dtbs
+make modules_install
 
-cp /overlay/i2cslave-bcm2708.dtbo /boot/overlays/
+cp arch/arm/boot/dts/*.dtb /boot/
+cp arch/arm/boot/dts/overlays/*.dtb* /boot/overlays/
+cp arch/arm/boot/dts/overlays/README /boot/overlays/
+scripts/mkknlimg arch/arm/boot/zImage /boot/$KERNEL.img
+cd ../
 
-echo "Change /boot/config.txt to add overlay"
+git clone https://github.com/marilafo/raspberry_slave_i2c.git
 
-cat << "EOF" >> /boot/config.txt
+cd raspberry_slave_i2c
+dtc -@ -I dts -O dtb i2cslave-bcm2708-overlay.dts -o i2cslave-bcm2708.dtbo
+cp i2cslave-bcm2708.dtbo /boot/overlays/
 
-# Added by install_overlay.sh
-dtoverlay=i2cslave-bcm2708
-dtparam=i2c=on
-dtparam=i2c0=on
-dtparam=i2c_arm=on
-dtoverlay=i2c0-bcm2708
-enable_uart=1
-EOF
+make CFLAGS=-DSLV_ADDRESS=$ADDRESS all
+sudo cp bcm2835_slave_mod.ko /lib/modules/$(uname -r)/kernel/drivers/
+sudo depmod -a
+cd ../
 
-echo "Add module in /etc/modules"
-echo "i2c-dev" >> /etc/modules
-modprobe i2c-dev
+echo "bcm2835_slave_mod slave_add=$ADDRESS" >> /etc/modprobe.d/i2c.conf
+echo "dtoverlay=i2cslave-bcm2708" >> /boot/config.txt
