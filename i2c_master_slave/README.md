@@ -23,6 +23,8 @@ If everything worked, you should be able to see the I2C device at address `0x50`
 i2cdetect -y 0
 ```
 
+If it works and you see a device at `0x50`, you can write any program that reads the device `/dev/i2c_slave`. On master, you can send data with the command `i2cset -y 0 0x50 0xFF` (send the byte `0xFF`).
+
 ## Known issues
 
 * The connection is not very stable. Messages sent can be modified or simply lost.
