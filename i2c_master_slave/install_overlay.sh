@@ -6,6 +6,8 @@ else
 	ADDRESS=80 # 0x50
 fi
 
+apt-get install -y git
+
 git clone --depth=1 https://github.com/raspberrypi/linux
 cd linux
 
