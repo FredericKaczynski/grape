@@ -6,12 +6,12 @@ else
 	ADDRESS=80 # 0x50
 fi
 
-apt-get install -y git
+apt-get install -y git sysstat libncurses5-dev bc build-essential
 
 git clone --depth=1 https://github.com/raspberrypi/linux
 cd linux
 
-KERNEL=kernel7
+KERNEL=kernel
 make bcm2709_defconfig
 
 make -j4 zImage modules dtbs
